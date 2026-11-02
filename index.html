@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+  <meta name="theme-color" content="#f7f7f2">
+  <meta name="description" content="Un pequeño avión, una ciudad interminable. Toca, planea y supera los rascacielos en este juego de vuelo minimalista.">
+  <title>AVIONCITO — Mantén el vuelo</title>
+  <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./style.css">
+  <script defer src="./js/config.js"></script>
+  <script defer src="./js/engine.js"></script>
+  <script defer src="./js/audio.js"></script>
+  <script defer src="./js/renderer.js"></script>
+  <script defer src="./js/modifiers.js"></script>
+  <script defer src="./js/game.js"></script>
+</head>
+<body>
+  <main id="game" class="game" data-state="menu" aria-label="AVIONCITO, juego de vuelo">
+    <canvas id="sky" aria-label="Ciudad y avión. Usa espacio, clic o toques para ascender."></canvas>
+    <div class="frame-corner corner-tl" aria-hidden="true"></div><div class="frame-corner corner-br" aria-hidden="true"></div>
+
+    <section id="menu" class="screen menu-screen" aria-labelledby="title">
+      <header class="masthead"><span class="brand-mark">✦</span><span>EST. 2026 <i>/</i> VUELO LIBRE</span><span class="edition">EDICIÓN 01</span></header>
+      <div class="menu-copy">
+        <div class="eyebrow"><span class="status-dot"></span> UN AVIÓN. NINGÚN PLAN.</div>
+        <h1 id="title">AVIONCITO<span class="title-dot">.</span></h1>
+        <p class="intro">Mantén el vuelo.<br>La ciudad no va a apartarse.</p>
+        <div class="menu-actions"><button id="play" class="button primary">Jugar <span aria-hidden="true">↗</span></button><button id="options" class="button secondary">Opciones <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 5h14M3 10h14M3 15h14M7 2v6M13 7v6M8 12v6"/></svg></button></div>
+        <div class="controls-guide"><span class="desktop-hint"><kbd>ESPACIO</kbd> <span>o</span> <kbd>CLIC</kbd></span><span class="touch-hint"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M9 11V5a2 2 0 014 0v5l3 1v5H7l-4-5 2-2 4 3"/></svg> TOCA LA PANTALLA</span><span class="guide-text">Toca para subir. Mantén para planear.</span></div>
+      </div>
+      <div class="menu-best"><span class="micro-label">TU MEJOR VUELO</span><span class="best-number" id="menuBest">00000</span><span class="micro-label">PUNTOS</span></div>
+      <footer class="menu-footer"><span><span class="tiny-square"></span> MODO NORMAL <i>/</i> ETAPAS SIN FIN</span><span class="footer-right"><span class="sound-caption">EL CIELO ESTÁ EN CALMA</span><button id="menuSound" class="icon-button sound-button" aria-label="Silenciar sonido" title="Sonido"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 8h4l4-4v12l-4-4H3zM14 7q4 3 0 6"/></svg></button><button id="menuFullscreen" class="icon-button" aria-label="Pantalla completa" title="Pantalla completa"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7 3H3v4M13 3h4v4M3 13v4h4M17 13v4h-4"/></svg></button></span></footer>
+    </section>
+
+    <section id="hud" class="hud" hidden aria-label="Marcador de la partida">
+      <div class="score-area"><span class="micro-label">PUNTOS</span><strong id="score" class="pixel">00000</strong><span id="runBest" class="run-best">RÉCORD 00000</span></div>
+      <div class="stage-area"><div class="stage-count"><span class="micro-label" id="stageLabel">ETAPA 01</span><strong class="pixel" id="counter">00/00</strong></div><button id="pauseButton" class="icon-button pause-button" aria-label="Pausar partida" title="Pausa (P o Esc)"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7 4v12M13 4v12"/></svg></button></div>
+      <div id="notice" class="flight-notice" role="status" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V8h5v12M14 20V3h5v17M3 20h18M7 11h1M7 14h1M16 6h1M16 9h1M16 12h1"/></svg><div><strong id="noticeTitle"></strong><span id="noticeSub"></span></div></div>
+      <div id="learningHint" class="learning-hint"><span class="desktop-hint"><kbd>ESPACIO</kbd> O CLIC</span><span class="touch-hint">TOQUES CORTOS</span><span> para subir · mantén para un ascenso suave</span></div>
+      <div class="run-footer"><span id="flightStatus">VUELO EN CURSO</span><span class="route-track" aria-hidden="true"><i id="routeProgress"></i></span><span id="speedReadout">165 NUDOS</span></div>
+    </section>
+
+    <div id="crashCaption" class="crash-caption" hidden></div>
+    <button id="skipCrash" class="skip-crash" hidden>Reintentar <span>↗</span></button>
+
+    <div id="pause" class="dialog-layer" hidden><section class="dialog" aria-labelledby="pauseTitle" role="dialog" aria-modal="true"><span class="eyebrow">UN RESPIRO EN EL AIRE</span><h2 id="pauseTitle">EN PAUSA<span>.</span></h2><p>La ciudad puede esperar un momento.</p><button id="resume" class="button primary full">Continuar <span>↗</span></button><div class="split-actions"><button id="restart" class="text-button">Reiniciar</button><button id="pauseMenu" class="text-button">Menú principal</button></div><span class="dialog-note">P O ESC PARA CONTINUAR</span></section></div>
+
+    <div id="settings" class="dialog-layer" hidden><section class="dialog options-dialog" role="dialog" aria-modal="true" aria-labelledby="settingsTitle"><span class="eyebrow">ANTES DE DESPEGAR</span><h2 id="settingsTitle">A TU AIRE<span>.</span></h2><div class="setting-row"><div><strong>Sonido</strong><small>Motor, viento y algún aterrizaje.</small></div><button id="soundToggle" class="toggle" role="switch" aria-checked="true" aria-label="Sonido"><span></span></button></div><div class="setting-row"><div><strong>Movimiento reducido</strong><small>Menos partículas y sin sacudidas.</small></div><button id="motionToggle" class="toggle" role="switch" aria-checked="false" aria-label="Movimiento reducido"><span></span></button></div><div class="setting-row"><div><strong>Pantalla completa en móvil</strong><small>Al jugar, si el navegador lo permite.</small></div><button id="fullscreenToggle" class="toggle" role="switch" aria-checked="true" aria-label="Pantalla completa automática"><span></span></button></div><div class="settings-tip"><span>01</span><p>Los toques rápidos suben más que mantener pulsado. Resérvalos para las torres.</p></div><button id="closeSettings" class="button primary full">Listo para volar <span>↗</span></button></section></div>
+
+    <div id="gameover" class="dialog-layer gameover-layer" hidden><section class="dialog result-dialog" role="dialog" aria-modal="true" aria-labelledby="overTitle"><span class="eyebrow" id="overEyebrow">ATERRIZAJE IMPROVISADO</span><h2 id="overTitle">FIN DEL VUELO<span>.</span></h2><p id="overMessage">El edificio tenía preferencia.</p><div id="newRecord" class="new-record" hidden>✦ NUEVO RÉCORD PERSONAL</div><div class="result-main"><span class="micro-label">TU PUNTUACIÓN</span><strong id="finalScore" class="pixel">00000</strong></div><div class="result-stats"><div><span class="micro-label">EDIFICIOS</span><strong id="finalPassed">0</strong></div><div><span class="micro-label">ETAPA</span><strong id="finalStage">01</strong></div><div><span class="micro-label">RÉCORD</span><strong id="finalBest">00000</strong></div></div><button id="retry" class="button primary full">Otro vuelo <span>↗</span></button><button id="overMenu" class="text-button full">Menú principal</button><span class="dialog-note">ESPACIO O TOCA EL FONDO PARA REINTENTAR</span></section></div>
+
+    <div id="rotate" class="rotate-screen" hidden><svg viewBox="0 0 80 80" aria-hidden="true"><rect x="25" y="13" width="30" height="54" rx="4"/><path d="M30 59h20M13 38a28 28 0 0147-20M60 9v10H50M67 42a28 28 0 01-47 20M20 71V61h10"/></svg><h2>CAMBIA DE<br>HORIZONTE.</h2><p>Gira tu teléfono para volar.<br>La ciudad necesita un poco de espacio.</p><span class="micro-label">AVIONCITO / VUELO HORIZONTAL</span></div>
+    <div id="transition" class="transition" aria-hidden="true"></div>
+    <noscript><div class="noscript">Activa JavaScript para jugar a AVIONCITO.</div></noscript>
+  </main>
+</body>
+</html>
